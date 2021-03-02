@@ -1,3 +1,4 @@
+"use strict"
 /**
  * Primary file for the API
  */
@@ -8,27 +9,48 @@ const http = require('http');
 const { type } = require('os');
 const { StringDecoder } = require('string_decoder');
 const url = require('url');
+const fs = require('fs');
+const _data = require('./lib/data');
+
+// TESTING
+//@TODO delete this
+_data.create('test', 'newFile', { 'foo': 'bar' }, (err) => {
+    console.log('There was an error', err);
+});
+
+_data.read('test', 'newFile', (err, data) => {
+    console.log('There was an error', err, ' and this was the data', data);
+});
+
+_data.update('test', 'newFile', { 'fizz': 'buzz' }, (err, data) => {
+    console.log('There was an error', err);
+});
+
+/** 
+_data.delete('test', 'newFile', (err) => {
+    console.log('There was an error', err);
+});
+*/
 
 // Server
 const server = http.createServer((req, res) => {
     const parsedUrl = url.parse(req.url, true);
     const path = parsedUrl.pathname;
     const trimmedPath = path.replace(/^\/+|\/+$/g, '');
-    var queryStringObject = parsedUrl.query;
+    const queryStringObject = parsedUrl.query;
     const method = req.method.toLocaleLowerCase();
-    var headers = req.headers;
-    var decoder = new StringDecoder('utf-8');
-    var buffer = '';
+    const headers = req.headers;
+    const decoder = new StringDecoder('utf-8');
+    const buffer = '';
     req.on('data', (data) => {
         buffer += decoder.write(data);
     });
     req.on('end', () => {
         buffer += decoder.end();
 
-        var chosenHandler = typeof (router[trimmedPath]) !== 'undefined' ? router[trimmedPath] : handlers.notFound;
+        const chosenHandler = typeof (router[trimmedPath]) !== 'undefined' ? router[trimmedPath] : handlers.notFound;
 
-
-        var data = {
+        const data = {
             'trimmedPath': trimmedPath,
             'queryStringObject': queryStringObject,
             'method': method,
@@ -50,7 +72,7 @@ const server = http.createServer((req, res) => {
     });
 });
 
-handlers = {};
+const handlers = {};
 
 handlers.notFound = (data, callback) => {
     callback(404);
@@ -61,7 +83,7 @@ handlers.hello = (data, callback) => {
 };
 
 
-router = {
+const router = {
     'sample': handlers.sample,
     'hello': handlers.hello
 };
