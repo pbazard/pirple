@@ -10,6 +10,7 @@ const { type } = require('os');
 const { StringDecoder } = require('string_decoder');
 const url = require('url');
 const fs = require('fs');
+const handlers = require('./lib/handlers');
 const _data = require('./lib/data');
 
 // TESTING
@@ -41,7 +42,8 @@ const server = http.createServer((req, res) => {
     const method = req.method.toLocaleLowerCase();
     const headers = req.headers;
     const decoder = new StringDecoder('utf-8');
-    const buffer = '';
+
+    let buffer = '';
     req.on('data', (data) => {
         buffer += decoder.write(data);
     });
@@ -72,20 +74,10 @@ const server = http.createServer((req, res) => {
     });
 });
 
-const handlers = {};
-
-handlers.notFound = (data, callback) => {
-    callback(404);
-};
-
-handlers.hello = (data, callback) => {
-    callback(406, { 'msg': 'Hello Pirple World!' });
-};
-
-
 const router = {
-    'sample': handlers.sample,
-    'hello': handlers.hello
+    'hello': handlers.hello,
+    'ping': handlers.ping,
+    'users': handlers.users
 };
 
 server.listen(3000, () => {
