@@ -17,7 +17,7 @@ helpers.hash = (str) => {
 };
 
 // Parse a json string to an object
-helpers.parseToJsonObject = (str) => {
+helpers.parseJsonToObject = (str) => {
     try {
         const obj = JSON.parse(str);
         return obj;

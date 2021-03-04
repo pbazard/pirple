@@ -2,6 +2,7 @@
 
 var fs = require('fs');
 var path = require('path');
+const helpers = require('./helpers');
 
 // Container
 
@@ -34,7 +35,12 @@ lib.create = (dir, file, data, callback) => {
 
 lib.read = (dir, file, callback) => {
     fs.readFile(lib.baseDir + dir + '/' + file + '.json', 'utf-8', (err, data) => {
-        callback(err, data);
+        if (!err && data) {
+            var parsedData = helpers.parseJsonToObject(data);
+            callback(false, parsedData);
+        } else {
+            callback(err, data);
+        }
     });
 }
 
