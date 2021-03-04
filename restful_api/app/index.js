@@ -12,9 +12,10 @@ const url = require('url');
 const fs = require('fs');
 const handlers = require('./lib/handlers');
 const _data = require('./lib/data');
+const helpers = require('./lib/helpers');
 
 // TESTING
-//@TODO delete this
+//TODO: delete this
 _data.create('test', 'newFile', { 'foo': 'bar' }, (err) => {
     console.log('There was an error', err);
 });
@@ -34,7 +35,9 @@ _data.delete('test', 'newFile', (err) => {
 */
 
 // Server
+// TODO: Replace payload by body
 const server = http.createServer((req, res) => {
+    // FIXME: replace by URL object
     const parsedUrl = url.parse(req.url, true);
     const path = parsedUrl.pathname;
     const trimmedPath = path.replace(/^\/+|\/+$/g, '');
@@ -57,7 +60,7 @@ const server = http.createServer((req, res) => {
             'queryStringObject': queryStringObject,
             'method': method,
             'headers': headers,
-            'payload': buffer
+            'payload': helpers.parseJsonToObject(buffer)
         };
 
         chosenHandler(data, function (statusCode, payload) {
